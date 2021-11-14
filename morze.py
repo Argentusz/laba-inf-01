@@ -12,9 +12,16 @@ def morse(n):
                   '7': '11000', '8': '11100', '9': '11110'}
     res = ''
     for i in n:
-        res += morse_dict[i.lower()]
-    return '1' + res[::-1] + '1'
+        try:
+            res += morse_dict[i.lower()]
+        except KeyError:
+            return '', 'u1_1'
+    return '1' + res[::-1] + '1', 0
 
 
 if __name__ == '__main__':
-    print(morse(input()))
+    code, error = morse(input())
+    if not error:
+        print(code)
+    else:
+        print(f'Error code: {error}')
