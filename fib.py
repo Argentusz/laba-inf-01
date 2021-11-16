@@ -28,4 +28,3 @@ def ten_to_fib(n):
         s = str(i)
         ans+=s
     return ans
-print(ten_to_fib(10))
