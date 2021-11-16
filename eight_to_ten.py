@@ -7,4 +7,7 @@ def eight_to_ten(s)->int:
         ans = i*8**j
         dec.append(ans)
         j+=1
-    return sum(dec)
+    st = str(sum(dec))
+    ans = int(st[::-1])
+    return ans
+#returns inverted 10-number 
