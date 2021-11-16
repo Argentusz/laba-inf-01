@@ -1,11 +1,11 @@
-def fibonacci(n):
+def fibonacci(n) ->list:
     fib = []
     fib.append(1)
     fib.append(1)
     [fib.append(fib[k - 1] + fib[k - 2]) for k in range(2, n)]
     return fib
 
-def ten_to_fib(n):
+def ten_to_fib(n)->str:
     i=0
     sum = 0
     dec=[]
