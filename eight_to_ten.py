@@ -1,4 +1,4 @@
-def eight_to_ten(s)->int:
+def eight_to_ten(s)->(int, str):
     ans=0
     dec=[]
     j=0
