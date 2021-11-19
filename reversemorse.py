@@ -11,7 +11,7 @@ def morse(n):
 
     res = (n.split('2'))
 
-    for i in range(len(res)-1):
+    for i in range((len(res)-1) or 1):
         res[i] = morse_dict[res[i]]
 
     return res, 0
