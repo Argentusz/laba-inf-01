@@ -14,9 +14,10 @@ def morse(n):
     for i in n:
         try:
             res += morse_dict[i.lower()]
+            res += '2'
         except KeyError:
             return '', 'u1_1'
-    return '1' + res[::-1] + '1', 0
+    return '2' + res[::-1] + '2', 0
 
 
 if __name__ == '__main__':
@@ -25,3 +26,4 @@ if __name__ == '__main__':
         print(code)
     else:
         print(f'Error code: {error}')
+
