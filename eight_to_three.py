@@ -20,4 +20,6 @@ def eight_to_three(s)->(str,str):
             s += i
     except TypeError:
         return '', 'u8-3_err'
+    if (s[0] != '1' or s[-1] != '1'):
+        return '', 'u8-3_err_missing_2_points!'
     return s,0
