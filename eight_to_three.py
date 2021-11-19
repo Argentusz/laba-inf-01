@@ -21,5 +21,3 @@ def eight_to_three(s)->(str,str):
     except TypeError:
         return '', 'u8-3_err'
     return s,0
-
-print(eight_to_three("1154540252"))
