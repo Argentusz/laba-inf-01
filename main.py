@@ -12,14 +12,15 @@ FPS = 60  # Max FPS
 font = pygame.font.Font(None, 25)  # Font for password input
 BG = pygame.image.load(os.path.join('Textures', 'bg_game.png'))  # Gameplay background (Kali Linux Desktop)
 BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
+KEY_SFX = pygame.mixer.Sound(os.path.join('SFX', 'keys_pressed.mp3'))  # Sound of pressed keys
 # Dictionary used in opening animation as sleep time
 SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 0.09, 9: 0.09, 10: 0.18, 11: 0.11,
                 12: 0.11, 13: 0.11, 14: 0.25, 15: 0.11, 16: 0.3, 17: 0.09, 18: 0.09, 19: 0.12, 20: 0.08, 21: 0.08,
-                22: 0.1, 23: 0.11, 24: 0.7, 25: 0.11, 26: 0.11, 27: 0.11, 28: 0.11, 29: 0.11, 30: 0.11, 31: 0.11,
-                32: 0.11, 33: 0.11, 34: 0.11, 35: 0.11, 36: 0.11, 37: 0.11, 38: 0.11, 39: 0.11, 40: 0.11, 41: 0.11,
-                42: 0.11, 43: 0.11, 44: 0.11, 45: 0.11, 46: 0.11, 47: 0.11, 48: 0.11, 49: 0.11, 50: 0.11, 51: 0.11,
-                52: 0.11, 53: 0.11, 54: 0.11, 55: 0.11, 56: 0.11, 57: 0.11, 58: 0.11, 59: 0.11, 60: 0.11, 61: 0.11,
-                62: 0.11, 63: 0.11, 64: 0.11, 65: 0.11, 66: 0.11, 67: 0.11, 68: 0.11, 69: 0.11}
+                22: 0.1, 23: 0.11, 24: 0.7, 25: 0.11, 26: 0.11, 27: 0.11, 28: 0.11, 29: 0.11, 30: 0.1, 31: 0.1, 32: 0.1,
+                33: 0.1, 34: 0.1, 35: 0.1, 36: 0.1, 37: 0.1, 38: 0.1, 39: 0.1, 40: 0.1, 41: 0.1, 42: 0.1, 43: 0.1,
+                44: 0.1, 45: 0.1, 46: 0.1, 47: 0.1, 48: 0.1, 49: 0.1, 50: 0.05, 51: 0.05, 52: 0.05, 53: 0.05, 54: 0.05,
+                55: 0.05, 56: 0.05, 57: 0.05, 58: 0.05, 59: 0.05, 60: 0.05, 61: 0.05, 62: 0.05, 63: 0.05, 64: 0.05,
+                65: 0.05, 66: 0.05, 67: 0.05, 68: 0.05, 69: 0.11}
 # Temporary password & code for debugging/developing
 TEMP_PASSWORD = 'password'
 TEMP_CODE = comp(TEMP_PASSWORD)
@@ -77,6 +78,9 @@ def draw_opening(i):
     op_image = pygame.image.load(os.path.join('Textures', op_address))
     op_image = pygame.transform.scale(op_image, (WIDTH, HEIGHT))
     WIN.blit(op_image, (0, 0))
+    if i == 7 or i == 16 or i == 28:  # Keys pressed sound
+        pygame.mixer.Sound.play(KEY_SFX)
+        pygame.mixer.music.stop()
     pygame.display.update()
 
 
