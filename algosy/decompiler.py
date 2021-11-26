@@ -1,7 +1,7 @@
-from reversemorse import morse as rm
-from ten_to_eight import ten_to_eight as tte
-from fib_to_ten import fib_to_ten as ftt
-from eight_to_three import eight_to_three as etth
+from algosy.reversemorse import morse as rm
+from algosy.ten_to_eight import ten_to_eight as tte
+from algosy.fib_to_ten import fib_to_ten as ftt
+from algosy.eight_to_three import eight_to_three as etth
 
 def main():
     n = input()

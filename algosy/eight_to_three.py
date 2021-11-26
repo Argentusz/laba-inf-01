@@ -1,4 +1,4 @@
-from eight_to_ten import eight_to_ten as ett
+from algosy.eight_to_ten import eight_to_ten as ett
 
 def eight_to_three(s)->(str,str):
     a = list(s)
@@ -20,6 +20,6 @@ def eight_to_three(s)->(str,str):
             s += i
     except TypeError:
         return '', 'u8-3_err'
-    if (s[0] != '2' or s[-1] != '2'):
+    if s[0] != '2' or s[-1] != '2':
         return '', 'u8-3_err_missing_2_points!'
     return s,0

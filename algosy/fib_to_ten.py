@@ -1,4 +1,4 @@
-from fib import fibonacci
+from algosy.fib import fibonacci
 
 def fib_to_ten(s)->(int, str):
     try:
@@ -11,3 +11,9 @@ def fib_to_ten(s)->(int, str):
     except TypeError:
         return '', 'uf-10_err'
     return summ, 0
+
+def main():
+    print(fib_to_ten(input()))
+
+if __name__ == '__main__':
+    main()
