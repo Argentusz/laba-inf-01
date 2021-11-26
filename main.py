@@ -13,6 +13,7 @@ font = pygame.font.Font(None, 25)  # Font for password input
 BG = pygame.image.load(os.path.join('Textures', 'bg_game.png'))  # Gameplay background (Kali Linux Desktop)
 BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
 KEY_SFX = pygame.mixer.Sound(os.path.join('SFX', 'keys_pressed.mp3'))  # Sound of pressed keys
+MUSIC = pygame.mixer.Sound(os.path.join('SFX', 'music_for_hacking.mp3'))
 # Dictionary used in opening animation as sleep time
 SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 0.09, 9: 0.09, 10: 0.18, 11: 0.11,
                 12: 0.11, 13: 0.11, 14: 0.25, 15: 0.11, 16: 0.3, 17: 0.09, 18: 0.09, 19: 0.12, 20: 0.08, 21: 0.08,
@@ -150,6 +151,7 @@ def main():
             time.sleep(SLEEP_FOR_OP[i])  # Pause between screenshots
             i += 1
             if i > 69:
+                pygame.mixer.Sound.play(MUSIC)  # Turning on the Music
                 mode = 3  # Go to Gameplay
         # -- Gameplay -- #
         if mode == 3:
