@@ -9,7 +9,7 @@ WIDTH, HEIGHT = 1280, 720  # Resolution
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))  # Window
 pygame.display.set_caption("anonymous_2008")  # Project Name
 FPS = 60  # Max FPS
-font = pygame.font.Font(None, 25)  # Font for password input
+font = pygame.font.Font(None, 22)  # Font for password input
 BG = pygame.image.load(os.path.join('Textures', 'bg_game.png'))  # Gameplay background (Kali Linux Desktop)
 BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
 KEY_SFX = pygame.mixer.Sound(os.path.join('SFX', 'keys_pressed.mp3'))  # Sound of pressed keys
@@ -24,7 +24,7 @@ SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 
                 65: 0.05, 66: 0.05, 67: 0.05, 68: 0.05, 69: 0.11}
 
 
-# Generating random password with difficulty
+# Generating random password with difficulty set
 def get_password(seed, dif):
     if dif == 0:
         password_pick = {0: 'abc', 1: '111', 2: 'qw'}
@@ -35,6 +35,14 @@ def get_password(seed, dif):
     else:
         password_pick = {0: 'password'}
     return password_pick[seed % len(password_pick)]
+
+
+# Generates random teacher's login
+def get_login(seed):
+    names = {0: 'tatyana', 1: 'elena', 2: 'angela', 3: 'alena', 4: 'irina', 5: 'svetlana'}
+    year = 1945 + seed % 20
+    mail = {0: '@mail.ru', 1: '@gmail.com'}
+    return names[seed % len(names)] + str(year) + mail[seed % len(mail)]
 
 
 # Checking if password is correct
@@ -55,12 +63,16 @@ def draw_hacked():
 
 
 # Actual gameplay starts from here
-def draw_gameplay(text):
+def draw_gameplay(text, login, code):
     WIN.blit(BG, (0, 0))
     # Render the current text.
+    login_surface = font.render(login, True, (0, 0, 0))
     txt_surface = font.render(text, True, (0, 0, 0))
+    code_surface = font.render(code, True, (0, 0, 0))
     # Blit the text.
+    WIN.blit(login_surface, (780, 248))
     WIN.blit(txt_surface, (780, 308))
+    WIN.blit(code_surface, (500, 500))
     pygame.display.update()
 
 
@@ -96,7 +108,7 @@ def draw_opening(i):
 
 # Program Entry point
 def main():
-    password = ''  # If nothing will go wrong this will be changed
+    password = login = code = ''  # If nothing will go wrong this will be changed
     seed = int(time.time())  # Seed For random numbers
     print(seed)
     life = 3  # Attempts user have to hack
@@ -129,9 +141,10 @@ def main():
                     elif event.key == pygame.K_RETURN:
                         if j % 3 == 1:  # Start the game
                             mode = 2
-                            dif = 1  # The difficulty should be picked by user. 2b fixed
+                            dif = 2  # The difficulty should be picked by user. 2b fixed
                             password = get_password(seed, dif)  # Generate password with this diff
                             code = comp(password)  # Get password coded
+                            login = get_login(seed)  # Get random login
                         if j % 3 == 0:  # Quit
                             run = False
                 # -- Gameplay -- #
@@ -170,7 +183,7 @@ def main():
                 mode = 3  # Go to Gameplay
         # -- Gameplay -- #
         if mode == 3:
-            draw_gameplay(text)  # Kali linux bg with user input on 'password' field
+            draw_gameplay(text, login, code)  # Kali linux bg with user input on 'password' field
         # -- Success Screen -- #
         if mode == 4:
             draw_hacked()
