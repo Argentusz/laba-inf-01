@@ -1,8 +1,15 @@
-from algosy.eight_to_ten import eight_to_ten as ette
-from algosy.fib import fibonacci
-from algosy.fib import ten_to_fib as ttf
-from algosy.morze import morse as m
-from algosy.three_to_eight import three_to_eight as thte
+if __name__ == '__main__':
+    from eight_to_ten import eight_to_ten as ette
+    from fib import fibonacci
+    from fib import ten_to_fib as ttf
+    from morze import morse as m
+    from three_to_eight import three_to_eight as thte
+else:
+    from algosy.eight_to_ten import eight_to_ten as ette
+    from algosy.fib import fibonacci
+    from algosy.fib import ten_to_fib as ttf
+    from algosy.morze import morse as m
+    from algosy.three_to_eight import three_to_eight as thte
 
 
 def comp(n):
@@ -27,7 +34,7 @@ def comp(n):
 
 
 def main():
-    comp(input())
+    print(comp(input()))
 
 
 if __name__ == '__main__':
