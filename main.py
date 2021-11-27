@@ -9,7 +9,7 @@ WIDTH, HEIGHT = 1280, 720  # Resolution
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))  # Window
 pygame.display.set_caption("anonymous_2008")  # Project Name
 FPS = 60  # Max FPS
-font = pygame.font.Font(None, 22)  # Font for password input
+font = pygame.font.Font(os.path.join('Fonts', 'Hack-Regular.ttf'), 15)  # Font for password input
 BG = pygame.image.load(os.path.join('Textures', 'bg_game.png'))  # Gameplay background (Kali Linux Desktop)
 BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
 KEY_SFX = pygame.mixer.Sound(os.path.join('SFX', 'keys_pressed.mp3'))  # Sound of pressed keys
@@ -68,11 +68,16 @@ def draw_gameplay(text, login, code):
     # Render the current text.
     login_surface = font.render(login, True, (0, 0, 0))
     txt_surface = font.render(text, True, (0, 0, 0))
-    code_surface = font.render(code, True, (0, 0, 0))
+    out_code = list(code.split('\n'))
     # Blit the text.
-    WIN.blit(login_surface, (780, 248))
-    WIN.blit(txt_surface, (780, 308))
-    WIN.blit(code_surface, (500, 500))
+    WIN.blit(login_surface, (780, 246))
+    WIN.blit(txt_surface, (780, 307))
+    for i in range(len(out_code)):
+        code_surface = font.render(out_code[i], True, (0, 0, 0))
+        if i != 0 and i != len(out_code) - 1:
+            WIN.blit(code_surface, (530, 520 + i*23))
+        else:
+            WIN.blit(code_surface, (510, 520 + i*23))
     pygame.display.update()
 
 
@@ -143,7 +148,14 @@ def main():
                             mode = 2
                             dif = 2  # The difficulty should be picked by user. 2b fixed
                             password = get_password(seed, dif)  # Generate password with this diff
-                            code = comp(password)  # Get password coded
+                            code_unchanged = comp(password)  # Get password coded
+                            code = code_unchanged
+                            print(code)
+                            dividers_num = len(code) // 80
+                            for temp in range(dividers_num):
+                                code = code[:80 * (temp + 1) + temp] + '\n' + code[80 * (temp + 1) + temp:]
+                            code = 'SQL.response.password.coded {\n' + code + '\n}'
+                            print(code)
                             login = get_login(seed)  # Get random login
                         if j % 3 == 0:  # Quit
                             run = False
