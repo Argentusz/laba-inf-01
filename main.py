@@ -13,7 +13,8 @@ font = pygame.font.Font(os.path.join('Fonts', 'Hack-Regular.ttf'), 15)  # Font f
 BG = pygame.image.load(os.path.join('Textures', 'bg_game.png'))  # Gameplay background (Kali Linux Desktop)
 BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
 KEY_SFX = pygame.mixer.Sound(os.path.join('SFX', 'keys_pressed.mp3'))  # Sound of pressed keys
-MUSIC = pygame.mixer.Sound(os.path.join('SFX', 'music_for_hacking.mp3'))
+BAZA = pygame.mixer.Sound(os.path.join('SFX', 'baza.mp3'))  # Based
+MUSIC = pygame.mixer.Sound(os.path.join('SFX', 'music_for_hacking.mp3'))  # Intense Cool Music to hack/study to
 # Dictionary used in opening animation as sleep time
 SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 0.09, 9: 0.09, 10: 0.18, 11: 0.11,
                 12: 0.11, 13: 0.11, 14: 0.25, 15: 0.11, 16: 0.3, 17: 0.09, 18: 0.09, 19: 0.12, 20: 0.08, 21: 0.08,
@@ -26,6 +27,7 @@ SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 
 
 # Generating random password with difficulty set
 def get_password(seed, dif):
+    # DataBase with all the passwords sorted by difficulty
     if dif == 0:
         password_pick = {0: 'abc', 1: '111', 2: 'qw'}
     elif dif == 1:
@@ -65,25 +67,26 @@ def draw_hacked():
 # Actual gameplay starts from here
 def draw_gameplay(text, login, code):
     WIN.blit(BG, (0, 0))
-    # Render the current text.
+    # Render the current input and login.
     login_surface = font.render(login, True, (0, 0, 0))
     txt_surface = font.render(text, True, (0, 0, 0))
-    out_code = list(code.split('\n'))
-    # Blit the text.
+    out_code = list(code.split('\n'))  # Splitting code into several lines
+    # Blit the input and login.
     WIN.blit(login_surface, (780, 246))
     WIN.blit(txt_surface, (780, 307))
     for i in range(len(out_code)):
+        # Drawing lines of code one by one
         code_surface = font.render(out_code[i], True, (0, 0, 0))
         if i != 0 and i != len(out_code) - 1:
-            WIN.blit(code_surface, (530, 520 + i*23))
+            WIN.blit(code_surface, (530, 520 + i*23))  # SQL Injection Decorations
         else:
-            WIN.blit(code_surface, (510, 520 + i*23))
+            WIN.blit(code_surface, (510, 520 + i*23))  # Actual code
     pygame.display.update()
 
 
 # Logo Appears at the start with changing alpha(?).
 def draw_logo(alpha):
-    logo = pygame.image.load(os.path.join('Textures', 'logo.png')).convert_alpha()
+    logo = pygame.image.load(os.path.join('Textures', 'logo_new.png')).convert()
     logo = pygame.transform.scale(logo, (WIDTH, HEIGHT))
     logo.set_alpha(alpha)
     WIN.blit(logo, (0, 0))
@@ -115,7 +118,7 @@ def draw_opening(i):
 def main():
     password = login = code = ''  # If nothing will go wrong this will be changed
     seed = int(time.time())  # Seed For random numbers
-    print(seed)
+
     life = 3  # Attempts user have to hack
     clock = pygame.time.Clock()  # Used for limiting FPS
     run = True  # Game is running while this is set to True
@@ -130,7 +133,8 @@ def main():
     i = 1  # Opening Screenshot s Number
     j = 1  # Main Menu Selected Option
     text = ''  # User input
-    alpha = 0  # Alpha for logo(?)
+    alpha = 180  # Alpha for logo(?)
+    baza_played = False  # Nobody heard this incredible phrase yet.
     while run:
         clock.tick(FPS)  # FPS Limitation
         for event in pygame.event.get():  # Checking for keys pressed / game closed
@@ -150,12 +154,14 @@ def main():
                             password = get_password(seed, dif)  # Generate password with this diff
                             code_unchanged = comp(password)  # Get password coded
                             code = code_unchanged
+                            print(password)  # For Debugging and Cheating
                             print(code)
-                            dividers_num = len(code) // 80
+                            dividers_num = len(code) // 80  # See how much line transfers we need
+                            # Divide code into multiple lines
                             for temp in range(dividers_num):
                                 code = code[:80 * (temp + 1) + temp] + '\n' + code[80 * (temp + 1) + temp:]
-                            code = 'SQL.response.password.coded {\n' + code + '\n}'
-                            print(code)
+                            code = 'SQL.response.password.coded {\n' + code + '\n}' # Add decorations
+
                             login = get_login(seed)  # Get random login
                         if j % 3 == 0:  # Quit
                             run = False
@@ -178,9 +184,13 @@ def main():
                         run = False
         # -- Drawing Logo -- #
         if mode == 0:
-            alpha += 1  # Gradually changing transparency of logo (Doesn't work ??)
             draw_logo(alpha)
-            if alpha == 50:
+            if not baza_played:
+                pygame.mixer.Sound.play(BAZA)  # Play Incredible Phrase
+                pygame.mixer.music.stop()
+                baza_played = True
+            alpha += 1  # Gradually changing transparency of logo (Doesn't work ??)
+            if alpha == 250:
                 mode = 1  # Go to Main Menu
         # -- Main Menu -- #
         elif mode == 1:
@@ -194,13 +204,13 @@ def main():
                 pygame.mixer.Sound.play(MUSIC)  # Turning on the Music
                 mode = 3  # Go to Gameplay
         # -- Gameplay -- #
-        if mode == 3:
+        elif mode == 3:
             draw_gameplay(text, login, code)  # Kali linux bg with user input on 'password' field
         # -- Success Screen -- #
-        if mode == 4:
+        elif mode == 4:
             draw_hacked()
         # -- Failure Screen -- #
-        if mode == 5:
+        elif mode == 5:
             draw_lose()
     pygame.quit()
 
