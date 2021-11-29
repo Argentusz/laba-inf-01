@@ -35,11 +35,11 @@ def draw_destiny():
 # Generating random password with difficulty set
 def get_password(seed, dif):
     # DataBase with all the passwords sorted by difficulty
-    if dif == 0:
+    if dif == 1:
         password_pick = {0: 'abc', 1: '111', 2: 'qw'}
-    elif dif == 1:
-        password_pick = {0: 'password', 1: '1984', 2: 'qwerty'}
     elif dif == 2:
+        password_pick = {0: 'password', 1: '1984', 2: 'qwerty'}
+    elif dif == 3:
         password_pick = {0: 'yjemyp3y3xz8syev', 1: '6ck5s4xqf3nks6qa', 2: '95shzpmjfk2vdtg8', 3: 'mfyujrvqdtj3w8sh'}
     else:
         password_pick = {0: 'password'}
@@ -120,6 +120,15 @@ def draw_main_menu(i):
     pygame.display.update()
 
 
+# Picking the Difficulty:
+def draw_picker(i):
+    menu_address = 'diff_pick_' + str(i) + '.png'
+    menu_image = pygame.image.load(os.path.join('Textures', menu_address))
+    menu_image = pygame.transform.scale(menu_image, (WIDTH, HEIGHT))
+    WIN.blit(menu_image, (0, 0))
+    pygame.display.update()
+
+
 # Animation for game start
 def draw_opening(i):
     op_address = 'op' + str(i) + '.png'
@@ -150,9 +159,11 @@ def main():
     # 5 - Failed in Hacking
     # 6 - Choose your Destiny
     # 7 - Good Ending
-    # }
+    # 8 - Picking Difficulty (in main menu)
+    # } (Order is a bit weird but it historically based)
     i = 1  # Opening Screenshot s Number
     j = 1  # Main Menu Selected Option
+    dif = 1  # Difficulty. Will be picked by user later
     text = ''  # User input
     alpha = 180  # Alpha for logo(?)
     baza_played = False  # Nobody heard this incredible phrase yet.
@@ -169,9 +180,20 @@ def main():
                     elif event.key == pygame.K_DOWN:  # Lower Option
                         j += 1
                     elif event.key == pygame.K_RETURN:
-                        if j % 3 == 1:  # Start the game
+                        if j % 3 == 1:  # Go to difficulty pick
+                            mode = 8
+                        if j % 3 == 0:  # Quit
+                            run = False
+                # -- Diff pick -- #
+                elif mode == 8:
+                    if event.key == pygame.K_UP:  # Upper Option
+                        dif -= 1
+                    elif event.key == pygame.K_DOWN:  # Lower Option
+                        dif += 1
+                    elif event.key == pygame.K_RETURN:
+                        if dif % 4 in (1, 2, 3):  # Go to gameplay
+                            dif = dif % 4 or 4
                             mode = 2
-                            dif = 2  # The difficulty should be picked by user. 2b fixed
                             password = get_password(seed, dif)  # Generate password with this diff
                             code_unchanged = comp(password)  # Get password coded
                             code = code_unchanged
@@ -182,12 +204,11 @@ def main():
                             for temp in range(dividers_num):
                                 code = code[:80 * (temp + 1) + temp] + '\n' + code[80 * (temp + 1) + temp:]
                             code = 'SQL.response.password.coded {\n' + code + '\n}'  # Add decorations
-
                             login = get_login(seed)  # Get random login
-                        if j % 3 == 0:  # Quit
-                            run = False
+                        else:
+                            mode = 1
                 # -- Gameplay -- #
-                if mode == 3:
+                elif mode == 3:
                     if event.key == pygame.K_RETURN:  # Checking password when Enter is pressed
                         if fact_check(text, password):
                             mode = 4  # Go to success screen
@@ -221,6 +242,9 @@ def main():
         # -- Main Menu -- #
         elif mode == 1:
             draw_main_menu(j % 3 or 3)  # Highlight option №j
+        # -- Choosing Difficulty -- #
+        elif mode == 8:
+            draw_picker(dif % 4 or 4)
         # -- Opening Animation -- #
         elif mode == 2:
             draw_opening(i)  # Blit screenshot №i
