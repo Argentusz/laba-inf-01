@@ -10,8 +10,9 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))  # Window
 pygame.display.set_caption("anonymous_2008")  # Project Name
 FPS = 60  # Max FPS
 font = pygame.font.Font(os.path.join('Fonts', 'Hack-Regular.ttf'), 15)  # Font for password input
+small_font = pygame.font.Font(os.path.join('Fonts', 'Hack-Regular.ttf'), 8)  # Font for attempts left counter
 BG = pygame.image.load(os.path.join('Textures', 'bg_game.png'))  # Gameplay background (Kali Linux Desktop)
-BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
+BG = pygame.transform.smoothscale(BG, (WIDTH, HEIGHT))
 KEY_SFX = pygame.mixer.Sound(os.path.join('SFX', 'keys_pressed.mp3'))  # Sound of pressed keys
 BAZA = pygame.mixer.Sound(os.path.join('SFX', 'baza.mp3'))  # Based
 MUSIC = pygame.mixer.Sound(os.path.join('SFX', 'music_for_hacking.mp3'))  # Intense Cool Music to hack/study to
@@ -23,6 +24,12 @@ SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 
                 44: 0.1, 45: 0.1, 46: 0.1, 47: 0.1, 48: 0.1, 49: 0.1, 50: 0.05, 51: 0.05, 52: 0.05, 53: 0.05, 54: 0.05,
                 55: 0.05, 56: 0.05, 57: 0.05, 58: 0.05, 59: 0.05, 60: 0.05, 61: 0.05, 62: 0.05, 63: 0.05, 64: 0.05,
                 65: 0.05, 66: 0.05, 67: 0.05, 68: 0.05, 69: 0.11}
+
+
+# Basically waiting user inputting return key
+def draw_destiny():
+    WIN.blit(BG, (0, 0))
+    pygame.display.update()
 
 
 # Generating random password with difficulty set
@@ -41,9 +48,10 @@ def get_password(seed, dif):
 
 # Generates random teacher's login
 def get_login(seed):
-    names = {0: 'tatyana', 1: 'elena', 2: 'angela', 3: 'alena', 4: 'irina', 5: 'svetlana'}
-    year = 1945 + seed % 20
-    mail = {0: '@mail.ru', 1: '@gmail.com'}
+    names = {0: 'tatyana', 1: 'elena', 2: 'angela', 3: 'alena', 4: 'irina', 5: 'svetlana', 6: 'maria', 7: 'ksenia',
+             8: 'zinaida', 9: 'antonina'}
+    year = 1950 + seed % 15
+    mail = {0: '@mail.ru', 1: '@gmail.com', 2: '@yahoo.com'}
     return names[seed % len(names)] + str(year) + mail[seed % len(mail)]
 
 
@@ -60,16 +68,26 @@ def draw_lose():
 
 # Player succeed in hacking
 def draw_hacked():
+    WIN.fill((0, 255, 255))
+    pygame.display.update()
+
+
+# Good Ending
+def good_ending():
     WIN.fill((0, 255, 0))
     pygame.display.update()
 
 
 # Actual gameplay starts from here
-def draw_gameplay(text, login, code):
+def draw_gameplay(text, login, code, life):
     WIN.blit(BG, (0, 0))
     # Render the current input and login.
     login_surface = font.render(login, True, (0, 0, 0))
     txt_surface = font.render(text, True, (0, 0, 0))
+    if life < 3:
+        attempts_left = "That didn't work. Try again! Attempts left: " + str(life)
+        life_surface = small_font.render(attempts_left, True, (255, 0, 0))
+        WIN.blit(life_surface, (775, 333))
     out_code = list(code.split('\n'))  # Splitting code into several lines
     # Blit the input and login.
     WIN.blit(login_surface, (780, 246))
@@ -106,7 +124,7 @@ def draw_main_menu(i):
 def draw_opening(i):
     op_address = 'op' + str(i) + '.png'
     op_image = pygame.image.load(os.path.join('Textures', op_address))
-    op_image = pygame.transform.scale(op_image, (WIDTH, HEIGHT))
+    op_image = pygame.transform.smoothscale(op_image, (WIDTH, HEIGHT))
     WIN.blit(op_image, (0, 0))
     if i == 7 or i == 16 or i == 28:  # Keys pressed sound
         pygame.mixer.Sound.play(KEY_SFX)
@@ -116,20 +134,23 @@ def draw_opening(i):
 
 # Program Entry point
 def main():
-    password = login = code = ''  # If nothing will go wrong this will be changed
+    # If nothing will go wrong this will be changed
+    password = login = code = ''
+    start = 0  # Used later to check time player not hacking
     seed = int(time.time())  # Seed For random numbers
-
     life = 3  # Attempts user have to hack
     clock = pygame.time.Clock()  # Used for limiting FPS
     run = True  # Game is running while this is set to True
-    mode = 0
-    # Mode we are in:
+    mode = 0  # Mode we are in, where: {
     # 0 - Drawing logo
     # 1 - Drawing Main Menu
     # 2 - Opening Animation
     # 3 - Gameplay
     # 4 - Web Hacked
     # 5 - Failed in Hacking
+    # 6 - Choose your Destiny
+    # 7 - Good Ending
+    # }
     i = 1  # Opening Screenshot s Number
     j = 1  # Main Menu Selected Option
     text = ''  # User input
@@ -140,7 +161,7 @@ def main():
         for event in pygame.event.get():  # Checking for keys pressed / game closed
             if event.type == pygame.QUIT:  # Game is closed
                 run = False
-            if event.type == pygame.KEYDOWN:  # Key is pressed
+            if event.type == pygame.KEYDOWN:  # Key is pressed in:
                 # -- Main Menu -- #
                 if mode == 1:
                     if event.key == pygame.K_UP:  # Upper Option
@@ -160,7 +181,7 @@ def main():
                             # Divide code into multiple lines
                             for temp in range(dividers_num):
                                 code = code[:80 * (temp + 1) + temp] + '\n' + code[80 * (temp + 1) + temp:]
-                            code = 'SQL.response.password.coded {\n' + code + '\n}' # Add decorations
+                            code = 'SQL.response.password.coded {\n' + code + '\n}'  # Add decorations
 
                             login = get_login(seed)  # Get random login
                         if j % 3 == 0:  # Quit
@@ -171,7 +192,8 @@ def main():
                         if fact_check(text, password):
                             mode = 4  # Go to success screen
                         else:
-                            life -= 1  # -1 Attempt
+                            if text != '':
+                                life -= 1  # -1 Attempt
                         if not life:
                             mode = 5  # If no more lives go to fail screen
                         text = ''  # Deleting previous input
@@ -182,6 +204,10 @@ def main():
                 if mode == 4 or mode == 5:  # In developing :)
                     if event.key == pygame.K_q:
                         run = False
+                if mode == 6:
+                    if event.key == pygame.K_RETURN:  # If player start hack
+                        mode = 3
+        ######################
         # -- Drawing Logo -- #
         if mode == 0:
             draw_logo(alpha)
@@ -202,16 +228,26 @@ def main():
             i += 1
             if i > 69:
                 pygame.mixer.Sound.play(MUSIC)  # Turning on the Music
-                mode = 3  # Go to Gameplay
+                mode = 6  # Go to Choose your Destiny
+                start = time.time()  # Start the timer
+                print(start)
         # -- Gameplay -- #
         elif mode == 3:
-            draw_gameplay(text, login, code)  # Kali linux bg with user input on 'password' field
+            draw_gameplay(text, login, code, life)  # Kali linux bg with user input on 'password' field
         # -- Success Screen -- #
         elif mode == 4:
             draw_hacked()
         # -- Failure Screen -- #
         elif mode == 5:
             draw_lose()
+        # -- Choosing Destiny -- #
+        elif mode == 6:
+            draw_destiny()
+            if time.time() > time.time() - start > 5 * 60:  # If player won't start hack in 5 minutes he wins
+                mode = 7
+        # -- Good Ending -- #
+        elif mode == 7:
+            good_ending()
     pygame.quit()
 
 
