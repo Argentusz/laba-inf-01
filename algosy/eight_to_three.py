@@ -15,10 +15,8 @@ def eight_to_three(s)->(str,str):
             binar = str(num % 3) + binar
             num //= 3
         ar = list(map(str, list(binar)))
-        s = '2'
         for i in ar:
             s += i
-        s+='2';
     except TypeError:
         return '', 'u8-3_err'
     if s[0] != '2' or s[-1] != '2':
