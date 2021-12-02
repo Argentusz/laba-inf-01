@@ -2,12 +2,12 @@ import pygame
 import os
 import time
 from algosy.compiler import comp
+from algosy.decompiler import decompiler as decomp
 
 pygame.init()
 # -- Constants -- #
 WIDTH, HEIGHT = 1280, 720  # Resolution
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))  # Window
-# WIN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF)
 pygame.display.set_caption("anonymous_2008")  # Project Name
 FPS = 60  # Max FPS
 font = pygame.font.Font(os.path.join('Fonts', 'Hack-Regular.ttf'), 15)  # Font for password input
@@ -36,7 +36,7 @@ def draw_destiny():
     pygame.display.update()
 
 
-# Generating random password with difficulty set
+# Generating random password with difficulty set for student mode
 def get_password(seed, dif):
     # DataBase with all the passwords sorted by difficulty
     if dif == 1:
@@ -47,6 +47,19 @@ def get_password(seed, dif):
         password_pick = {0: 'yjemyp3y3xz8syev', 1: '6ck5s4xqf3nks6qa', 2: '95shzpmjfk2vdtg8', 3: 'mfyujrvqdtj3w8sh'}
     else:
         password_pick = {0: 'password'}
+    return password_pick[seed % len(password_pick)]
+
+# Generating random code with difficulty set for teacher mode
+def get_code(seed, dif):
+    # DataBase with all the passwords sorted by difficulty
+    if dif == 1:
+        password_pick = {0: '0100000001010000010101001010100010100010001000100101010', 1: '0100000101001010000010100100100100', 2: '010000100001000000000001010100100101010'}
+    elif dif == 2:
+        password_pick = {0: '0100101010100010100100000000100101000000010100100000010101000101001010', 1: '010010000000010101010000000101000100000100000101010010000100001010010101001001000', 2: '01000100100010100100100010010010001010101010000101000100000100000010010000100001000100000001010010000000010'}
+    elif dif == 3:
+        password_pick = {0: '0101000101001000100000000010010000100010010010010001000101010101001000001000010010001001000010001000100100010001010001010000010010001010000001000', 1: '0101000101001000100000000010010000100010010010010001000101010101001000001000010010001001000010001000100100010001010001010000010010001010000001000', 2: '0100000100001010001000001010100100101010001000001001001010101010001001001000000100010001000101000000000010100010000000010010010010010000001010001010100101000000000010000000001010000100100', 3: '0100000010000010101000010010001010010100001000100001010010000010010100100000001000100001000000010010101010010101000100001010010010100010001001010000010001000100000101010010100000000000010101000000010010010101001000000000010100'}
+    else:
+        password_pick = {0: '0100000101001010000010100100100100'}
     return password_pick[seed % len(password_pick)]
 
 
@@ -142,8 +155,8 @@ def draw_picker(i):
 
 
 # Picking the Gamemod:
-def draw_gamemod_picker(i):
-    menu_address = 'gamemode_pick_' + str(i) + '.png'
+def draw_gamemod_picker(game_mode, game_mode_pick):
+    menu_address = 'gamemode_pick_' + str(game_mode_pick) + "_" + str(game_mode) + '.png'
     menu_image = pygame.image.load(os.path.join('Textures', menu_address))
     menu_image = pygame.transform.scale(menu_image, (WIDTH, HEIGHT))
     WIN.blit(menu_image, (0, 0))
@@ -164,6 +177,7 @@ def draw_opening(i):
 
 # Program Entry point
 def main():
+    FULL_SCREEN = False
     # If nothing will go wrong this will be changed
     password = login = code = ''
     start = 0  # Used later to check time player not hacking
@@ -187,6 +201,7 @@ def main():
     j = 1  # Main Menu Selected Option
     dif = 1  # Difficulty. Will be picked by user later
     game_mode = 1  # Game modes: 1 - student, 2 - teacher
+    game_mode_pick = 1 # Choosing gam mode in menu ("back" is included)
     text = ''  # User input
     alpha = 180  # Alpha for logo(?)
     baza_played = False  # Nobody heard this incredible phrase yet.
@@ -197,6 +212,13 @@ def main():
             if event.type == pygame.QUIT:  # Game is closed
                 run = False
             if event.type == pygame.KEYDOWN:  # Key is pressed in:
+                if event.key == pygame.K_LALT:
+                    if FULL_SCREEN:
+                        WIN = pygame.display.set_mode((WIDTH, HEIGHT))  # Window
+                        FULL_SCREEN = False
+                    else:
+                        FULL_SCREEN = True
+                        WIN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF)
                 if mode == 4 or mode == 5 or mode == 7:  # In Ending
                     run = False
                 # -- Main Menu -- #
@@ -225,33 +247,39 @@ def main():
                     elif event.key == pygame.K_DOWN:  # Lower Option
                         dif += 1
                     elif event.key == pygame.K_RETURN:
-                        if game_mode == 1:  # Student
-                            if dif % 4 in (1, 2, 3):  # Go to gameplay
-                                dif = dif % 4 or 4
-                                mode = 2
+                        if dif % 4 in (1, 2, 3):  # Go to gameplay
+                            dif = dif % 4 or 4
+                            mode = 2
+                            if game_mode == 1:
                                 password = get_password(seed, dif)  # Generate password with this diff
                                 code_unchanged = comp(password)  # Get password coded
                                 code = code_unchanged
-                                print(password)  # For Debugging and Cheating
-                                print(code)
-                                dividers_num = len(code) // 80  # See how much line transfers we need
-                                # Divide code into multiple lines
-                                for temp in range(dividers_num):
-                                    code = code[:80 * (temp + 1) + temp] + '\n' + code[80 * (temp + 1) + temp:]
-                                code = 'SQL.response.password.coded {\n' + code + '\n}'  # Add decorations
-                                login = get_login(seed)  # Get random login
-                            else:
-                                mode = 1
-                        if game_mode == 2:  # Teacher
-                            pass
+                            elif game_mode == 2:
+                                password = get_code(seed, dif)  # Generate code with this diff
+                                code_unchanged = decomp(password)  # Get code uncodee
+                                code = code_unchanged
+                            print(password)  # For Debugging and Cheating
+                            print(code)
+                            dividers_num = len(code) // 80  # See how much line transfers we need
+                            # Divide code into multiple lines
+                            for temp in range(dividers_num):
+                                code = code[:80 * (temp + 1) + temp] + '\n' + code[80 * (temp + 1) + temp:]
+                            if game_mode == 1: code = 'SQL.response.password.coded {\n' + str(code) + '\n}'  # Add decorations
+                            elif game_mode == 2: code = 'SQL.response.code.uncoded {\n' + str(code) + '\n}'  # Add decorations
+                            login = get_login(seed)  # Get random login
+                        else:
+                            mode = 1
+                # -- Game mode pick -- #
                 elif mode == 9:
                     if event.key == pygame.K_UP:  # Upper Option
-                        game_mode -= 1
+                        game_mode_pick -= 1
+                        if game_mode_pick < 1: game_mode_pick = 3
                     elif event.key == pygame.K_DOWN:  # Lower Option
-                        game_mode += 1
+                        game_mode_pick += 1
+                        if game_mode_pick > 3: game_mode_pick = 1
                     elif event.key == pygame.K_RETURN:
-                        if dif % 3 in (1, 2):  # Choose the game mode
-                            mode = 1
+                        if game_mode_pick % 3 in (1, 2):  # Choose the game mode
+                            game_mode = game_mode_pick
                         else:
                             mode = 1
                 # -- Gameplay -- #
@@ -292,8 +320,8 @@ def main():
         # -- Choosing Difficulty -- #
         elif mode == 8:
             draw_picker(dif % 4 or 4)
-        elif mode == 8:
-            draw_gamemod_picker(game_mode % 3 or 3)
+        elif mode == 9:
+            draw_gamemod_picker(game_mode, game_mode_pick)
         # -- Opening Animation -- #
         elif mode == 2:
             draw_opening(i)  # Blit screenshot №i
