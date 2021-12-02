@@ -64,7 +64,10 @@ def fact_check(text, password):
 
 # Player failed in hacking
 def draw_lose():
-    WIN.fill((255, 0, 0))
+    lose_image = pygame.image.load(os.path.join('Textures', 'remen.png'))
+    lose_image = pygame.transform.smoothscale(lose_image, (WIDTH, HEIGHT))
+    WIN.blit(lose_image, (0,0))
+    pygame.display.update()
 
 
 # Player succeed in hacking
@@ -79,7 +82,9 @@ def draw_hacked(i):
 
 # Good Ending
 def good_ending():
-    WIN.fill((0, 255, 0))
+    win_image = pygame.image.load(os.path.join('Textures', 'goodending.jpg'))
+    win_image = pygame.transform.smoothscale(win_image, (WIDTH, HEIGHT))
+    WIN.blit(win_image, (0, 0))
     pygame.display.update()
 
 
@@ -308,7 +313,7 @@ def main():
         # -- Choosing Destiny -- #
         elif mode == 6:
             draw_destiny()
-            if time.time() > time.time() - start > 5 * 60:  # If player won't start hack in 5 minutes he wins
+            if time.time() > time.time() - start > 5:  # If player won't start hack in 5 minutes he wins
                 mode = 7
         # -- Good Ending -- #
         elif mode == 7:
