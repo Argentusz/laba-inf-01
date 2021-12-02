@@ -19,6 +19,7 @@ BAZA = pygame.mixer.Sound(os.path.join('SFX', 'baza.mp3'))  # Based
 MUSIC = pygame.mixer.Sound(os.path.join('SFX', 'music_for_hacking.mp3'))  # Intense Cool Music to hack/study to
 BAD_END = pygame.mixer.Sound(os.path.join('SFX', 'bad_end.mp3'))  # Bad ending (used all attempts)
 SOCIAL_CREDIT = pygame.mixer.Sound(os.path.join('SFX', 'chingchong.mp3'))  # Good Ending
+REMEN = pygame.mixer.Sound(os.path.join('SFX', 'remen.mp3'))  # Very Bad ending
 # Dictionary used in opening animation as sleep time0
 SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 0.09, 9: 0.09, 10: 0.18, 11: 0.11,
                 12: 0.11, 13: 0.11, 14: 0.25, 15: 0.11, 16: 0.3, 17: 0.09, 18: 0.09, 19: 0.12, 20: 0.08, 21: 0.08,
@@ -209,6 +210,12 @@ def main():
                             mode = 9
                         if j % 3 == 0:  # Quit
                             run = False
+                # -- Opening -- #
+                elif mode == 2:
+                    if event.key == pygame.K_RETURN:
+                        mode = 3
+                        pygame.mixer.Sound.stop(KEY_SFX)
+                        pygame.mixer.Sound.play(MUSIC).set_volume(0.5)  # Turning on the Music
                 # -- Diff pick -- #
                 elif mode == 8:
                     if event.key == pygame.K_UP:  # Upper Option
@@ -255,6 +262,8 @@ def main():
                                 life -= 1  # -1 Attempt
                         if not life:
                             mode = 5  # If no more lives go to fail screen
+                            pygame.mixer.Sound.stop(MUSIC)
+                            pygame.mixer.Sound.play(REMEN)
                         text = ''  # Deleting previous input
                     elif event.key == pygame.K_BACKSPACE:  # Deleting last symbol of input when backspace is pressed
                         text = text[:-1]
