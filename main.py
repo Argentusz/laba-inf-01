@@ -7,7 +7,7 @@ pygame.init()
 # -- Constants -- #
 WIDTH, HEIGHT = 1280, 720  # Resolution
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))  # Window
-WIN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF)
+# WIN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF)
 pygame.display.set_caption("anonymous_2008")  # Project Name
 FPS = 60  # Max FPS
 font = pygame.font.Font(os.path.join('Fonts', 'Hack-Regular.ttf'), 15)  # Font for password input
@@ -63,20 +63,17 @@ def fact_check(text, password):
 
 
 # Player failed in hacking
-def draw_lose(bad_end_played, i):
-    #WIN.fill((255, 0, 0))
+def draw_lose():
+    WIN.fill((255, 0, 0))
 
+
+# Player succeed in hacking
+def draw_hacked(i):
     time.sleep(1)
     op_address = 'game_over' + str(i) + '.jpg'
     op_image = pygame.image.load(os.path.join('Textures', op_address))
     op_image = pygame.transform.smoothscale(op_image, (WIDTH, HEIGHT))
     WIN.blit(op_image, (0, 0))
-    pygame.display.update()
-
-
-# Player succeed in hacking
-def draw_hacked():
-    WIN.fill((0, 255, 255))
     pygame.display.update()
 
 
@@ -145,13 +142,14 @@ def draw_gamemod_picker(i):
     WIN.blit(menu_image, (0, 0))
     pygame.display.update()
 
+
 # Animation for game start
 def draw_opening(i):
     op_address = 'op' + str(i) + '.png'
     op_image = pygame.image.load(os.path.join('Textures', op_address))
     op_image = pygame.transform.smoothscale(op_image, (WIDTH, HEIGHT))
     WIN.blit(op_image, (0, 0))
-    if i == 7 or i == 16 or i == 25 or i == 34 or i == 43:  # Keys pressed sound
+    if i == 7:
         pygame.mixer.Sound.play(KEY_SFX)
         pygame.mixer.music.stop()
     pygame.display.update()
@@ -181,11 +179,11 @@ def main():
     i = 1  # Opening Screenshot s Number
     j = 1  # Main Menu Selected Option
     dif = 1  # Difficulty. Will be picked by user later
-    game_mode = 1 # Game modes: 1 - student, 2 - teacher 
+    game_mode = 1  # Game modes: 1 - student, 2 - teacher
     text = ''  # User input
     alpha = 180  # Alpha for logo(?)
     baza_played = False  # Nobody heard this incredible phrase yet.
-    bad_end_played = False # Still no bad end
+    hack_end_played = False  # Still no bad end
     while run:
         clock.tick(FPS)  # FPS Limitation
         for event in pygame.event.get():  # Checking for keys pressed / game closed
@@ -212,7 +210,7 @@ def main():
                     elif event.key == pygame.K_DOWN:  # Lower Option
                         dif += 1
                     elif event.key == pygame.K_RETURN:
-                        if game_mode == 1: # Student
+                        if game_mode == 1:  # Student
                             if dif % 4 in (1, 2, 3):  # Go to gameplay
                                 dif = dif % 4 or 4
                                 mode = 2
@@ -229,7 +227,7 @@ def main():
                                 login = get_login(seed)  # Get random login
                             else:
                                 mode = 1
-                        if game_mode == 2: # Teacher 
+                        if game_mode == 2:  # Teacher
                             pass
                 elif mode == 9:
                     if event.key == pygame.K_UP:  # Upper Option
@@ -287,6 +285,7 @@ def main():
             time.sleep(SLEEP_FOR_OP[i])  # Pause between screenshots
             i += 1
             if i > 69:
+                pygame.mixer.Sound.stop(KEY_SFX)
                 pygame.mixer.Sound.play(MUSIC).set_volume(0.5)  # Turning on the Music
                 mode = 6  # Go to Choose your Destiny
                 start = time.time()  # Start the timer
@@ -296,15 +295,16 @@ def main():
             draw_gameplay(text, login, code, life)  # Kali linux bg with user input on 'password' field
         # -- Success Screen -- #
         elif mode == 4:
-            draw_hacked()
+            i += 1
+            if not hack_end_played:
+                pygame.mixer.Sound.play(BAD_END)  # Play FBI OPEN UP!!!
+                pygame.mixer.music.stop()
+                hack_end_played = True
+            draw_hacked(i % 3 or 1)
         # -- Failure Screen -- #
         elif mode == 5:
             i += 1
-            if not bad_end_played:
-                pygame.mixer.Sound.play(BAD_END)  # Play FBI OPEN UP!!!
-                pygame.mixer.music.stop()
-                bad_end_played = True
-            draw_lose(bad_end_played, i % 3 or 1)
+            draw_lose()
         # -- Choosing Destiny -- #
         elif mode == 6:
             draw_destiny()
