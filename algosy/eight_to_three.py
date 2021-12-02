@@ -15,6 +15,7 @@ def eight_to_three(s)->(str,str):
             binar = str(num % 3) + binar
             num //= 3
         ar = list(map(str, list(binar)))
+        s = ''
         for i in ar:
             s += i
     except TypeError:
