@@ -18,6 +18,7 @@ KEY_SFX = pygame.mixer.Sound(os.path.join('SFX', 'keys_pressed.mp3'))  # Sound o
 BAZA = pygame.mixer.Sound(os.path.join('SFX', 'baza.mp3'))  # Based
 MUSIC = pygame.mixer.Sound(os.path.join('SFX', 'music_for_hacking.mp3'))  # Intense Cool Music to hack/study to
 BAD_END = pygame.mixer.Sound(os.path.join('SFX', 'bad_end.mp3'))  # Bad ending (used all attempts)
+SOCIAL_CREDIT = pygame.mixer.Sound(os.path.join('SFX', 'chingchong.mp3'))  # Good Ending
 # Dictionary used in opening animation as sleep time0
 SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 0.09, 9: 0.09, 10: 0.18, 11: 0.11,
                 12: 0.11, 13: 0.11, 14: 0.25, 15: 0.11, 16: 0.3, 17: 0.09, 18: 0.09, 19: 0.12, 20: 0.08, 21: 0.08,
@@ -314,6 +315,8 @@ def main():
         elif mode == 6:
             draw_destiny()
             if time.time() > time.time() - start > 5:  # If player won't start hack in 5 minutes he wins
+                pygame.mixer.Sound.stop(MUSIC)
+                pygame.mixer.Sound.play(SOCIAL_CREDIT)
                 mode = 7
         # -- Good Ending -- #
         elif mode == 7:
