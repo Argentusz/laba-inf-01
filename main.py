@@ -407,7 +407,7 @@ def main():
         # -- Choosing Destiny -- #
         elif mode == 6:
             draw_destiny(game_mode)
-            if time.time() > time.time() - start > 5 * 60:  # If player won't start hack in 5 minutes he wins
+            if time.time() > time.time() - start > 60:  # If player won't start hack in 5 minutes he wins
                 pygame.mixer.Sound.stop(MUSIC)
                 pygame.mixer.Sound.play(SOCIAL_CREDIT)
                 mode = 7
