@@ -20,6 +20,8 @@ MUSIC = pygame.mixer.Sound(os.path.join('SFX', 'music_for_hacking.mp3'))  # Inte
 BAD_END = pygame.mixer.Sound(os.path.join('SFX', 'bad_end.mp3'))  # Bad ending (used all attempts)
 SOCIAL_CREDIT = pygame.mixer.Sound(os.path.join('SFX', 'chingchong.mp3'))  # Good Ending
 REMEN = pygame.mixer.Sound(os.path.join('SFX', 'remen.mp3'))  # Very Bad ending
+POVEZLO = pygame.mixer.Sound(os.path.join('SFX', 'povezlo.mp3'))
+NEPOVEZLO = pygame.mixer.Sound(os.path.join('SFX', 'nepovezlo.mp3'))
 # Dictionary used in opening animation as sleep time0
 SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 0.09, 9: 0.09, 10: 0.18, 11: 0.11,
                 12: 0.11, 13: 0.11, 14: 0.25, 15: 0.11, 16: 0.3, 17: 0.09, 18: 0.09, 19: 0.12, 20: 0.08, 21: 0.08,
@@ -31,8 +33,14 @@ SLEEP_FOR_OP = {1: 0.11, 2: 0.11, 3: 0.11, 4: 0.11, 5: 0.2, 6: 0.4, 7: 0.12, 8: 
 
 
 # Basically waiting user inputting return key
-def draw_destiny():
+def draw_destiny(game_mode):
+    if game_mode == 1:
+        text = 'Press Enter To Launch hack'
+    else:
+        text = 'Press Enter To Prevent Hack'
+    press_surface = font.render(text, True, (0, 0, 0))
     WIN.blit(BG, (0, 0))
+    WIN.blit(press_surface, (640, 500))
     pygame.display.update()
 
 
@@ -49,15 +57,23 @@ def get_password(seed, dif):
         password_pick = {0: 'password'}
     return password_pick[seed % len(password_pick)]
 
+
 # Generating random code with difficulty set for teacher mode
 def get_code(seed, dif):
     # DataBase with all the passwords sorted by difficulty
     if dif == 1:
-        password_pick = {0: '0100000001010000010101001010100010100010001000100101010', 1: '0100000101001010000010100100100100', 2: '010000100001000000000001010100100101010'}
+        password_pick = {0: '0100000001010000010101001010100010100010001000100101010',
+                         1: '0100000101001010000010100100100100',
+                         2: '010000100001000000000001010100100101010'}
     elif dif == 2:
-        password_pick = {0: '0100101010100010100100000000100101000000010100100000010101000101001010', 1: '010010000000010101010000000101000100000100000101010010000100001010010101001001000', 2: '01000100100010100100100010010010001010101010000101000100000100000010010000100001000100000001010010000000010'}
+        password_pick = {0: '0100101010100010100100000000100101000000010100100000010101000101001010',
+                         1: '010010000000010101010000000101000100000100000101010010000100001010010101001001000',
+                         2: '01000100100010100100100010010010001010101010000101000100000100000010010000100001000100000001010010000000010'}
     elif dif == 3:
-        password_pick = {0: '0101000101001000100000000010010000100010010010010001000101010101001000001000010010001001000010001000100100010001010001010000010010001010000001000', 1: '0101000101001000100000000010010000100010010010010001000101010101001000001000010010001001000010001000100100010001010001010000010010001010000001000', 2: '0100000100001010001000001010100100101010001000001001001010101010001001001000000100010001000101000000000010100010000000010010010010010000001010001010100101000000000010000000001010000100100', 3: '0100000010000010101000010010001010010100001000100001010010000010010100100000001000100001000000010010101010010101000100001010010010100010001001010000010001000100000101010010100000000000010101000000010010010101001000000000010100'}
+
+        password_pick = {0: '0100000100001010001000001010100100101010001000001001001010101010001001001000000100010001000101000000000010100010000000010010010010010000001010001010100101000000000010000000001010000100100',
+                         1: '010100100001001010101000101010000100000000100010101000100100000010010100010010100001000100100010010100101001001000100001001010100001010010000101000010101000010000010100000100010',
+                         2: '01000101000000101000100001001010100100010010000101010000010000010010101001010101000000100010101000101010101010010000100010010100100010000010001001010010000'}
     else:
         password_pick = {0: '0100000101001010000010100100100100'}
     return password_pick[seed % len(password_pick)]
@@ -78,33 +94,53 @@ def fact_check(text, password):
 
 
 # Player failed in hacking
-def draw_lose():
-    lose_image = pygame.image.load(os.path.join('Textures', 'remen.png'))
-    lose_image = pygame.transform.smoothscale(lose_image, (WIDTH, HEIGHT))
-    WIN.blit(lose_image, (0,0))
+def draw_lose(game_mode):
+    if game_mode == 1:
+        lose_image = pygame.image.load(os.path.join('Textures', 'remen.png'))
+        lose_image = pygame.transform.smoothscale(lose_image, (WIDTH, HEIGHT))
+        WIN.blit(lose_image, (0, 0))
+    elif game_mode == 2:
+        lose_image = pygame.image.load(os.path.join('Textures', 'vzlom.png'))
+        lose_image = pygame.transform.smoothscale(lose_image, (WIDTH, HEIGHT))
+        WIN.blit(lose_image, (0, 0))
     pygame.display.update()
 
 
 # Player succeed in hacking
-def draw_hacked(i):
-    time.sleep(1)
-    op_address = 'game_over' + str(i) + '.jpg'
-    op_image = pygame.image.load(os.path.join('Textures', op_address))
-    op_image = pygame.transform.smoothscale(op_image, (WIDTH, HEIGHT))
-    WIN.blit(op_image, (0, 0))
+def draw_hacked(i, game_mode):
+    if game_mode == 1:
+        time.sleep(1)
+        op_address = 'game_over' + str(i) + '.jpg'
+        op_image = pygame.image.load(os.path.join('Textures', op_address))
+        op_image = pygame.transform.smoothscale(op_image, (WIDTH, HEIGHT))
+        WIN.blit(op_image, (0, 0))
+    elif game_mode == 2:
+        op_image = pygame.image.load(os.path.join('Textures', 'akak.png'))
+        op_image = pygame.transform.smoothscale(op_image, (WIDTH, HEIGHT))
+        WIN.blit(op_image, (0, 0))
     pygame.display.update()
 
 
 # Good Ending
-def good_ending():
-    win_image = pygame.image.load(os.path.join('Textures', 'goodending.jpg'))
-    win_image = pygame.transform.smoothscale(win_image, (WIDTH, HEIGHT))
-    WIN.blit(win_image, (0, 0))
+def good_ending(game_mode):
+    if game_mode == 1:
+        win_image = pygame.image.load(os.path.join('Textures', 'goodending.jpg'))
+        win_image = pygame.transform.smoothscale(win_image, (WIDTH, HEIGHT))
+        WIN.blit(win_image, (0, 0))
+    elif game_mode == 2:
+        win_image = pygame.image.load(os.path.join('Textures', 'minuscredit.jpg'))
+        win_image = pygame.transform.smoothscale(win_image, (WIDTH, HEIGHT))
+        WIN.blit(win_image, (0, 0))
     pygame.display.update()
 
 
 # Actual gameplay starts from here
-def draw_gameplay(text, login, code, life):
+def draw_gameplay(text, login, code, life, game_mode):
+    # Divide code into multiple lines
+    dividers_num = len(code) // 80  # See how much line transfers we need
+    for temp in range(dividers_num):
+        code = code[:80 * (temp + 1) + temp] + '\n' + code[80 * (temp + 1) + temp:]
+    code = 'SQL.response.password.coded {\n' + str(code) + '\n}'  # Add decorations
     WIN.blit(BG, (0, 0))
     # Render the current input and login.
     login_surface = font.render(login, True, (0, 0, 0))
@@ -124,6 +160,9 @@ def draw_gameplay(text, login, code, life):
             WIN.blit(code_surface, (530, 520 + i*23))  # SQL Injection Decorations
         else:
             WIN.blit(code_surface, (510, 520 + i*23))  # Actual code
+    hint = pygame.image.load(os.path.join('Textures', 'hint'+ str(game_mode) +'.png'))
+    hint = pygame.transform.smoothscale(hint, (400, 200))
+    WIN.blit(hint, (50, 500))
     pygame.display.update()
 
 
@@ -179,7 +218,7 @@ def draw_opening(i):
 def main():
     FULL_SCREEN = False
     # If nothing will go wrong this will be changed
-    password = login = code = ''
+    password = login = code = code_unchanged = ''
     start = 0  # Used later to check time player not hacking
     seed = int(time.time())  # Seed For random numbers
     life = 3  # Attempts user have to hack
@@ -201,7 +240,7 @@ def main():
     j = 1  # Main Menu Selected Option
     dif = 1  # Difficulty. Will be picked by user later
     game_mode = 1  # Game modes: 1 - student, 2 - teacher
-    game_mode_pick = 1 # Choosing gam mode in menu ("back" is included)
+    game_mode_pick = 1  # Choosing gam mode in menu ("back" is included)
     text = ''  # User input
     alpha = 180  # Alpha for logo(?)
     baza_played = False  # Nobody heard this incredible phrase yet.
@@ -255,17 +294,12 @@ def main():
                                 code_unchanged = comp(password)  # Get password coded
                                 code = code_unchanged
                             elif game_mode == 2:
-                                password = get_code(seed, dif)  # Generate code with this diff
-                                code_unchanged = decomp(password)  # Get code uncodee
-                                code = code_unchanged
-                            print(password)  # For Debugging and Cheating
-                            print(code)
-                            dividers_num = len(code) // 80  # See how much line transfers we need
-                            # Divide code into multiple lines
-                            for temp in range(dividers_num):
-                                code = code[:80 * (temp + 1) + temp] + '\n' + code[80 * (temp + 1) + temp:]
-                            if game_mode == 1: code = 'SQL.response.password.coded {\n' + str(code) + '\n}'  # Add decorations
-                            elif game_mode == 2: code = 'SQL.response.code.uncoded {\n' + str(code) + '\n}'  # Add decorations
+                                code = get_code(seed, dif)  # Generate code with this diff
+                                code_unchanged = code
+                                text = password = decomp(code)  # Get code uncoded
+                                code = ''
+                            print(f'{password = }')  # For Debugging and Cheating
+                            print(f'{code_unchanged = }')
                             login = get_login(seed)  # Get random login
                         else:
                             mode = 1
@@ -284,22 +318,40 @@ def main():
                             mode = 1
                 # -- Gameplay -- #
                 elif mode == 3:
-                    if event.key == pygame.K_RETURN:  # Checking password when Enter is pressed
-                        if fact_check(text, password):
-                            mode = 4  # Go to success screen
-                        else:
-                            if text != '':
-                                life -= 1  # -1 Attempt
-                        if not life:
-                            mode = 5  # If no more lives go to fail screen
-                            pygame.mixer.Sound.stop(MUSIC)
-                            pygame.mixer.Sound.play(REMEN)
-                        text = ''  # Deleting previous input
-                    elif event.key == pygame.K_BACKSPACE:  # Deleting last symbol of input when backspace is pressed
-                        text = text[:-1]
-                    else:
-                        text += event.unicode  # Appending pressed symbol
+                    if game_mode == 1:
+                        if event.key == pygame.K_RETURN:  # Checking password when Enter is pressed
 
+                            if fact_check(text, password):
+                                mode = 4  # Go to success screen
+                            elif text != '':
+                                life -= 1
+                            if not life:
+                                mode = 5  # If no more lives go to fail screen
+                                pygame.mixer.Sound.stop(MUSIC)
+                                pygame.mixer.Sound.play(REMEN)
+
+                            text = ''  # Deleting previous input
+                        elif event.key == pygame.K_BACKSPACE:  # Deleting last symbol of input when backspace is pressed
+                            text = text[:-1]
+                        else:
+                            text += event.unicode  # Appending pressed symbol
+                    elif game_mode == 2:
+
+                        text = password
+                        if event.key == pygame.K_RETURN:  # Checking password when Enter is pressed
+                            if fact_check(code, code_unchanged):
+                                mode = 4  # Go to success screen
+                            elif code != '':
+                                life -= 1
+                            if not life:
+                                mode = 5  # If no more lives go to fail screen
+                                pygame.mixer.Sound.stop(MUSIC)
+                                pygame.mixer.Sound.play(POVEZLO)
+                            code = ''
+                        elif event.key == pygame.K_BACKSPACE:  # Deleting last symbol of input when backspace is pressed
+                            code = code[:-1]
+                        else:
+                            code += event.unicode  # Appending pressed symbol
                 if mode == 6:
                     if event.key == pygame.K_RETURN:  # If player start hack
                         mode = 3
@@ -335,29 +387,33 @@ def main():
                 print(start)
         # -- Gameplay -- #
         elif mode == 3:
-            draw_gameplay(text, login, code, life)  # Kali linux bg with user input on 'password' field
+            draw_gameplay(text, login, code, life, game_mode)  # Kali linux bg with user input on 'password' field
         # -- Success Screen -- #
         elif mode == 4:
             i += 1
             if not hack_end_played:
-                pygame.mixer.Sound.play(BAD_END)  # Play FBI OPEN UP!!!
-                pygame.mixer.music.stop()
+                if game_mode == 1:
+                    pygame.mixer.Sound.play(BAD_END)  # Play FBI OPEN UP!!!
+                    pygame.mixer.music.stop()
+                else:
+                    pygame.mixer.Sound.stop(MUSIC)
+                    pygame.mixer.Sound.play(NEPOVEZLO)
                 hack_end_played = True
-            draw_hacked(i % 3 or 1)
+            draw_hacked(i % 3 or 1, game_mode)
         # -- Failure Screen -- #
         elif mode == 5:
             i += 1
-            draw_lose()
+            draw_lose(game_mode)
         # -- Choosing Destiny -- #
         elif mode == 6:
-            draw_destiny()
-            if time.time() > time.time() - start > 5:  # If player won't start hack in 5 minutes he wins
+            draw_destiny(game_mode)
+            if time.time() > time.time() - start > 5 * 60:  # If player won't start hack in 5 minutes he wins
                 pygame.mixer.Sound.stop(MUSIC)
                 pygame.mixer.Sound.play(SOCIAL_CREDIT)
                 mode = 7
         # -- Good Ending -- #
         elif mode == 7:
-            good_ending()
+            good_ending(game_mode)
     pygame.quit()
 
 
