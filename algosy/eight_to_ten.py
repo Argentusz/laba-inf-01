@@ -15,3 +15,5 @@ def eight_to_ten(s)->(int, str):
     return ans, 0
 
 #returns inverted 10-number 
+if __name__ == '__main__':
+    print(eight_to_ten(input()))

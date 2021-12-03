@@ -26,4 +26,3 @@ if __name__ == '__main__':
         print(code)
     else:
         print(f'Error code: {error}')
-

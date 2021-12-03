@@ -10,9 +10,9 @@ else:
     from algosy.eight_to_three import eight_to_three as etth
 
 
-def decompiler():
-    n = input()
+def decompiler(n):
     n, err = ftt(n)
+    res = ''
     if err:
         print(f'Found error: {err}')
     else:
@@ -28,8 +28,11 @@ def decompiler():
                 if err:
                     print(f'Found error: {err}')
                 else:
-                    print(*n, sep='')
+                    for i in range(len(n)):
+                        res += n[i]
+                    return res
 
 
 if __name__ == '__main__':
-    decompiler()
+    n = input()
+    print(decompiler(n))

@@ -30,3 +30,6 @@ def ten_to_fib(n)->(str, str):
     except TypeError:
         return '', 'u10-fib_err'
     return ans, 0
+
+if __name__ == '__main__':
+    print(ten_to_fib(input()))

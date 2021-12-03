@@ -15,3 +15,6 @@ def three_to_eight(s) -> (str, str):
     except TypeError:
         return '', 'u3-8_err'
     return st,0
+
+if __name__ == '__main__':
+    print(three_to_eight(input())[0])
