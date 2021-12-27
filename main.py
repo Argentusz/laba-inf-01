@@ -19,7 +19,6 @@ BAZA = pygame.mixer.Sound(os.path.join('SFX', 'baza.mp3'))  # Based
 MUSIC = pygame.mixer.Sound(os.path.join('SFX', 'music_for_hacking.mp3'))  # Intense Cool Music to hack/study to
 BAD_END = pygame.mixer.Sound(os.path.join('SFX', 'bad_end.mp3'))  # Bad ending (used all attempts)
 SOCIAL_CREDIT = pygame.mixer.Sound(os.path.join('SFX', 'chingchong.mp3'))  # Good Ending
-REMEN = pygame.mixer.Sound(os.path.join('SFX', 'remen.mp3'))  # Very Bad ending
 POVEZLO = pygame.mixer.Sound(os.path.join('SFX', 'povezlo.mp3'))
 NEPOVEZLO = pygame.mixer.Sound(os.path.join('SFX', 'nepovezlo.mp3'))
 # Dictionary used in opening animation as sleep time0
@@ -235,7 +234,7 @@ def main():
     # 7 - Good Ending
     # 8 - Picking Difficulty (in main menu)
     # 9 - Picking game mode - settings (in main menu)
-    # } (Order is a bit weird but it historically based)
+    # } (Order is a bit weird, but it historically based)
     i = 1  # Opening Screenshot s Number
     j = 1  # Main Menu Selected Option
     dif = 1  # Difficulty. Will be picked by user later
@@ -328,8 +327,6 @@ def main():
                             if not life:
                                 mode = 5  # If no more lives go to fail screen
                                 pygame.mixer.Sound.stop(MUSIC)
-                                pygame.mixer.Sound.play(REMEN)
-
                             text = ''  # Deleting previous input
                         elif event.key == pygame.K_BACKSPACE:  # Deleting last symbol of input when backspace is pressed
                             text = text[:-1]
@@ -407,7 +404,7 @@ def main():
         # -- Choosing Destiny -- #
         elif mode == 6:
             draw_destiny(game_mode)
-            if time.time() > time.time() - start > 60:  # If player won't start hack in 5 minutes he wins
+            if time.time() > time.time() - start > 60:  # If player won't start hack in 1 minute he wins
                 pygame.mixer.Sound.stop(MUSIC)
                 pygame.mixer.Sound.play(SOCIAL_CREDIT)
                 mode = 7
